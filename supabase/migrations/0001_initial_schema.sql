@@ -77,10 +77,10 @@ create policy "owners create own profile" on public.profiles
 
 create policy "owners update own profile" on public.profiles
  for update to authenticated using (id = auth.uid())
- with check (id = auth.uid() and age_check_status = (select p.age_check_status from public.profiles p where p.id = auth.uid()));
+ with check (id = auth.uid());
 
 -- Verification status must be written only by a trusted server-side verifier, not client APIs.
-revoke update (age_check_status, age_verified_at) on public.profiles from authenticated, anon;
+revoke update on public.profiles from authenticated, anon;\ngrant update (display_name, bio, city, country_code, intention, interests, visibility, updated_at) on public.profiles to authenticated;
 
 create policy "members create own likes" on public.likes
  for insert to authenticated with check (actor_id = auth.uid());
