@@ -29,3 +29,11 @@ npm run dev
 ```
 
 This repository is a development preview, not a live dating service. All sample profiles are fictional.
+
+## Database foundation (not connected yet)
+- Initial Supabase SQL schema: `supabase/migrations/0001_initial_schema.sql`.
+- Environment variable names are documented in `.env.example`; copy it to `.env.local` only in a private development environment and fill values from your own project.
+- The migration is a starting point for review, not a production-ready security certification. Apply it only to a test Supabase project after a qualified security review.
+- Age verification must be performed by a trusted server-side provider integration. Never accept a client-supplied verified flag or store identity-document images in the profile database.
+- Do not expose a Supabase service-role key in browser code or commit real secrets.
+- Privacy settings at `/settings` are a local preview only and do not persist preferences.
