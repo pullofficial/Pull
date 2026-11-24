@@ -80,7 +80,8 @@ create policy "owners update own profile" on public.profiles
  with check (id = auth.uid());
 
 -- Verification status must be written only by a trusted server-side verifier, not client APIs.
-revoke update on public.profiles from authenticated, anon;\ngrant update (display_name, bio, city, country_code, intention, interests, visibility, updated_at) on public.profiles to authenticated;
+revoke update on public.profiles from authenticated, anon;
+grant update (display_name, bio, city, country_code, intention, interests, visibility, updated_at) on public.profiles to authenticated;
 
 create policy "members create own likes" on public.likes
  for insert to authenticated with check (actor_id = auth.uid());
