@@ -40,7 +40,7 @@ Use synthetic accounts and data only.
 | REPORT-03 | Reporter attempts to change report status | Update is denied |
 | REPORT-04 | Member attempts to read another reporter's report | No row is returned |
 | REPORT-05 | Member submits self-report or invalid category | Constraint rejects the insert |
-| PRIV-01 | Browser bundle and client network traffic are inspected | No service-role key, provider secret or private moderation data is exposed |
+| PRIV-01 | Browser bundle and client network traffic are inspected | No service-role key, provider secret or private moderation data is exposed |\n| DB-01 | Member directly invokes the block-check helper with two unrelated account IDs | Function does not disclose block relationships between other members |\n| DB-02 | Authenticated member attempts profile updates through every exposed API path | Only approved profile columns can be changed; age status and timestamp remain server-controlled |\n| DB-03 | Database grants and default privileges are inspected for every exposed table and function | No unintended table, RPC or moderation access is granted |
 
 ## Important integration checks
 
