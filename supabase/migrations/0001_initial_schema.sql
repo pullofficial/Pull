@@ -61,15 +61,32 @@ alter table public.likes enable row level security;
 alter table public.blocks enable row level security;
 alter table public.reports enable row level security;
 
+-- SECURITY DEFINER helper avoids blocks-table RLS hiding the reverse block direction.
+-- Keep the function narrowly scoped, schema-qualified and non-writable by members.
+create or replace function public.is_blocked_between(user_a uuid, user_b uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $
+  select exists (
+    select 1 from public.blocks b
+    where (b.blocker_id = user_a and b.blocked_id = user_b)
+       or (b.blocker_id = user_b and b.blocked_id = user_a)
+  );
+$;
+
+revoke all on function public.is_blocked_between(uuid, uuid) from public;
+grant execute on function public.is_blocked_between(uuid, uuid) to authenticated;
+
 -- Profiles: members can read verified, discoverable profiles only; owners can read/edit their own.
 create policy "members read discoverable verified profiles" on public.profiles
  for select to authenticated
  using (
    (id = auth.uid()) or
    (visibility = 'discoverable' and age_check_status = 'verified'
-    and not exists (select 1 from public.blocks b where
-      (b.blocker_id = auth.uid() and b.blocked_id = id) or
-      (b.blocker_id = id and b.blocked_id = auth.uid())))
+    and not public.is_blocked_between(auth.uid(), id))
  );
 
 create policy "owners create own profile" on public.profiles
@@ -84,7 +101,20 @@ revoke update on public.profiles from authenticated, anon;
 grant update (display_name, bio, city, country_code, intention, interests, visibility, updated_at) on public.profiles to authenticated;
 
 create policy "members create own likes" on public.likes
- for insert to authenticated with check (actor_id = auth.uid());
+ for insert to authenticated with check (
+   actor_id = auth.uid()
+   and exists (
+     select 1 from public.profiles actor
+     where actor.id = auth.uid() and actor.age_check_status = 'verified'
+   )
+   and exists (
+     select 1 from public.profiles target
+     where target.id = target_id
+       and target.age_check_status = 'verified'
+       and target.visibility = 'discoverable'
+   )
+   and not public.is_blocked_between(auth.uid(), target_id)
+ );
 create policy "members view likes they sent or received" on public.likes
  for select to authenticated using (actor_id = auth.uid() or target_id = auth.uid());
 create policy "members remove own likes" on public.likes
@@ -94,7 +124,13 @@ create policy "members manage blocks they create" on public.blocks
  for all to authenticated using (blocker_id = auth.uid()) with check (blocker_id = auth.uid());
 
 create policy "members submit reports" on public.reports
- for insert to authenticated with check (reporter_id = auth.uid());
+ for insert to authenticated with check (
+   reporter_id = auth.uid()
+   and exists (
+     select 1 from public.profiles reporter
+     where reporter.id = auth.uid() and reporter.age_check_status = 'verified'
+   )
+ );
 create policy "members view reports they submitted" on public.reports
  for select to authenticated using (reporter_id = auth.uid());
 
