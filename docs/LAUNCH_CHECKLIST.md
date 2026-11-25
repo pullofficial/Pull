@@ -19,6 +19,7 @@ This checklist records work that must be completed before pull accepts real memb
 - [ ] Define retry, appeal, false-rejection and account-recovery procedures.
 - [ ] Minimise age-check data; do not store identity-document images in the profile database.
 - [ ] Test bypass attempts, replay, account sharing and edge cases before launch.
+- [ ] Verify the age-verification provider callback is authenticated, replay-resistant and bound to the correct account.
 
 ## 3. Trust, safety and moderation
 - [ ] Implement working report and block actions across profiles and conversations.
@@ -28,9 +29,12 @@ This checklist records work that must be completed before pull accepts real memb
 - [ ] Provide user controls to unmatch, block, mute and manage unwanted contact.
 - [ ] Publish clear rules for consent, prohibited content and repeat-offender enforcement.
 - [ ] Test safety workflows end-to-end; preview buttons and policy text do not count as operational tools.
+- [ ] Test that likes require both accounts to be age-verified, the target to be discoverable, and neither direction to be blocked.
+- [ ] Test both directions of blocking against profile discovery and confirm report submission cannot alter moderation status.
 
 ## 4. Privacy and security
 - [ ] Complete a threat model and independent security review of database schema, row-level security and server routes.
+- [ ] Run automated database-policy tests for self-access, cross-account access, reverse blocks, pending-age accounts and unauthorised report access.
 - [ ] Verify that users can only read and change data they are authorised to access.
 - [ ] Restrict reports and moderation records to authorised personnel and audited workflows.
 - [ ] Keep service-role keys and provider secrets server-side; use managed secret storage.
