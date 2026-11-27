@@ -45,7 +45,12 @@ export default function DiscoverPage() {
             <option>Any intention</option><option>Casual dating</option><option>Meet new people</option><option>Meaningful connection</option>
           </select>
         </label>
-        <span className="muted" aria-live="polite" style={{ fontSize: 13, marginLeft: "auto" }}>{profiles.length} sample {profiles.length === 1 ? "profile" : "profiles"}</span>
+        <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginLeft: "auto" }}>
+          <span className="muted" aria-live="polite" style={{ fontSize: 13 }}>{profiles.length} sample {profiles.length === 1 ? "profile" : "profiles"} · {liked.length} demo {liked.length === 1 ? "like" : "likes"}</span>
+          {(country !== "All countries" || intent !== "Any intention" || liked.length > 0) && (
+            <button type="button" className="btn btn-dark" style={{ padding: "9px 14px", fontSize: 12 }} onClick={() => { setCountry("All countries"); setIntent("Any intention"); setLiked([]); }}>Reset preview</button>
+          )}
+        </div>
       </section>
 
       {profiles.length > 0 ? (
@@ -72,7 +77,7 @@ export default function DiscoverPage() {
         </div>
       )}
 
-      <p className="muted" style={{ fontSize: 12, marginTop: 24 }}>Likes exist only in temporary page state and disappear when you leave. No accounts, messages, matches or real people are connected.</p>
+      <p className="muted" style={{ fontSize: 12, marginTop: 24 }}>All profiles are fictional. Likes and filters are temporary demonstrations held only in this page session; they are not sent to a server and disappear when you leave. No accounts, messages, matches or real people are connected.</p>
     </main>
   );
 }
