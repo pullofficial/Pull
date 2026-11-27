@@ -24,6 +24,15 @@ export default function Join() {
           <strong style={{ color: '#641b3b' }}>Registration is not available yet.</strong>
           <p style={{ margin: '7px 0 0', lineHeight: 1.65, color: '#786b72' }}>No account can be created and no personal information is collected here. A date-of-birth checkbox alone will not be treated as age verification.</p>
         </div>
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 20 }}>
+          <a className="btn btn-dark" href="/discover">Explore the preview</a>
+          <a className="btn" style={{ background: "#fff1f5", color: "#641b3b" }} href="/safety">Read safety guidance</a>
+        </div>
+        <nav aria-label="Registration information" style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 22, fontSize: 13 }}>
+          <a href="/privacy">Privacy notice</a>
+          <a href="/terms">Terms</a>
+          <a href="/guidelines">Community guidelines</a>
+        </nav>
         <p className="muted" style={{ fontSize: 12, marginTop: 20 }}>Adults 18+ only. Access will depend on completed age assurance, safety checks and applicable local requirements.</p>
       </section>
     </main>
