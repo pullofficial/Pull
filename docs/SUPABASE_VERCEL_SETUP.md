@@ -38,7 +38,8 @@ This guide describes the intended connection for a private test deployment. It d
 ## Current Pull status
 
 - The repository contains an initial Supabase SQL migration and an `.env.example` file.
-- The current `package.json` does not yet include a Supabase client dependency.
-- No Supabase project is connected, no credentials are configured, and the migration has not been applied or tested against a live database.
+- The `@supabase/ssr` dependency and separate browser/server client helpers are now present under `lib/supabase/`. They use only the public project URL and publishable key.
+- The project owner reports adding the two public environment variables in Vercel and completing a redeployment. This has not been independently verified from the Vercel dashboard, and a Ready deployment alone does not prove a successful Supabase connection.
+- The migration has not been applied or tested against a live database.
 - Login, registration, profile saving, likes, matching, messaging and age assurance are not active.
 - Do not open public registration or enter real member data until the security findings are resolved, the database policies are tested, and age assurance and moderation are operational.
