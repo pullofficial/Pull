@@ -9,7 +9,7 @@ export async function createClient() {
     throw new Error('Supabase is not configured. Add the public project URL and publishable key to the deployment environment.');
   }
 
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
 
   return createServerClient(url, key, {
     cookies: {
