@@ -61,24 +61,24 @@ alter table public.likes enable row level security;
 alter table public.blocks enable row level security;
 alter table public.reports enable row level security;
 
--- SECURITY DEFINER helper avoids blocks-table RLS hiding the reverse block direction.
--- Keep the function narrowly scoped, schema-qualified and non-writable by members.
-create or replace function public.is_blocked_between(user_a uuid, user_b uuid)
+-- SECURITY DEFINER helper checks only the signed-in member's own block relationship.
+-- It accepts no caller-supplied member identity, preventing arbitrary pair lookups.
+create or replace function public.is_blocked_with(target_user uuid)
 returns boolean
 language sql
 stable
 security definer
 set search_path = ''
-as $
+as $function$
   select exists (
     select 1 from public.blocks b
-    where (b.blocker_id = user_a and b.blocked_id = user_b)
-       or (b.blocker_id = user_b and b.blocked_id = user_a)
+    where (b.blocker_id = (select auth.uid()) and b.blocked_id = target_user)
+       or (b.blocker_id = target_user and b.blocked_id = (select auth.uid()))
   );
-$;
+$function$;
 
-revoke all on function public.is_blocked_between(uuid, uuid) from public;
-grant execute on function public.is_blocked_between(uuid, uuid) to authenticated;
+revoke all on function public.is_blocked_with(uuid) from public;
+grant execute on function public.is_blocked_with(uuid) to authenticated;
 
 -- Profiles: members can read verified, discoverable profiles only; owners can read/edit their own.
 create policy "members read discoverable verified profiles" on public.profiles
@@ -86,7 +86,7 @@ create policy "members read discoverable verified profiles" on public.profiles
  using (
    (id = auth.uid()) or
    (visibility = 'discoverable' and age_check_status = 'verified'
-    and not public.is_blocked_between(auth.uid(), id))
+    and not public.is_blocked_with(id))
  );
 
 create policy "owners create own profile" on public.profiles
@@ -113,7 +113,7 @@ create policy "members create own likes" on public.likes
        and target.age_check_status = 'verified'
        and target.visibility = 'discoverable'
    )
-   and not public.is_blocked_between(auth.uid(), target_id)
+   and not public.is_blocked_with(target_id)
  );
 create policy "members view likes they sent or received" on public.likes
  for select to authenticated using (actor_id = auth.uid() or target_id = auth.uid());
